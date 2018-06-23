@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title></title>
+	<style>
+		.column {
+			float: left;
+			width: 20%;
+			padding: 10px;
+		}
+		.row:after {
+			content: "";
+			display: table;
+			clear: both;
+		}
+		img {
+			width: 100%;
+		}
+	</style>
+</head>
+<body>
+	<div id="user">
+		First Name:
+		<input type="text" id="firstname">
+		Last Name:
+		<input type="text" id="lastname">
+		Age:
+		<input type="number" id="age" min="1" max="80">
+		<br>
+		<input type="checkbox" id="prob" value="No">I don't have any memory problem.<br>
+	</div>
+	<div id="time"></div>
+	<div id="emotions" class="row"></div>
+	<div id="msg" style="display: none;">
+		<h4>Start the experiment by clicking "Next".</h4>
+	</div>
+	<div id="test" style="display: none;">
+		<div></div>
+		<video id="testVideo" width="100%">Fail to load test video.</video>
+	</div>
+	<div id="cam" style="width: 320px; height: 240px;">
+		<div></div>
+		<video autoplay playsinline muted id="webcam" style="width: 320px; height: 240px;"></video>
+	</div>
+	<div id="tutorial" style="display: none;">
+		<div></div>
+		<video id="tutorialVideo" width="100%" src="test.mp4" controls>Fail to load tutorial.</video>
+	</div>
+	<script type="text/javascript" src="webcam.min.js"></script>
+	<button onclick="nextpage()" id="step">Next</button>
+	<!-- Webcam set up -->
+	<script language="JavaScript">
+		Webcam.set({
+			width: 320,
+			height: 240,
+			image_format: 'jpeg',
+			jpeg_quality: 90
+		});
+		Webcam.attach("cam");
+	</script>
+	<script src="home.js"></script>
+</body>
+</html>
