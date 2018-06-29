@@ -1,63 +1,178 @@
 <!DOCTYPE html>
 <html>
 <head>
-	<title></title>
-	<style>
-		.column {
-			float: left;
-			width: 20%;
-			padding: 10px;
-		}
-		.row:after {
-			content: "";
-			display: table;
-			clear: both;
-		}
-		img {
-			width: 100%;
-		}
-	</style>
+	<!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.1/css/bootstrap.min.css" integrity="sha384-WskhaSGFgHYWDcbwN70/dfYBj47jz9qbsMId/iRN3ewGhXQFZCSftd1LZCfmhktB" crossorigin="anonymous">
+    <title>Test</title>
 </head>
 <body>
-	<div id="user">
-		First Name:
-		<input type="text" id="firstname">
-		Last Name:
-		<input type="text" id="lastname">
-		Age:
-		<input type="number" id="age" min="1" max="80">
-		<br>
-		<input type="checkbox" id="prob" value="No">I don't have any memory problem.<br>
+	<div class="container-fluid">
+		<div class="row">
+			<div class="col-md-12">
+				<h1 class="text-center d-none" id="msg">Click "Next" to start the experiment.</h1>
+			</div>
+		</div>
+		<!-- Input Form -->
+		<div class="row">
+			<div class="col-md-12">
+				<!-- Basic Info -->
+				<form id="userinput">
+					<!-- Name, Age -->
+					<div class="form-row">
+						<div class="form-group col-md-5">
+							<label for="input-firstname">First name</label>
+							<input type="text" class="form-control" placeholder="First name" id="input-firstname">
+						</div>
+						<div class="form-group col-md-5">
+							<label for="input-lastname">Last name</label>
+							<input type="text" class="form-control" placeholder="Last name" id="input-lastname">
+						</div>
+						<div class="form-group col-md-2">
+							<label for="input-age">Age</label>
+							<input type="text" class="form-control" placeholder="Age" id="input-age">
+						</div>
+					</div>
+					<!-- Categories -->
+					<div class="form-row">
+						<div class="form-group col-md-4">
+							<label for="input-gender">Gender</label>
+							<select id="input-gender" class="form-control">
+								<option selected>Choose...</option>
+								<option>Male</option>
+								<option>Female</option>
+								<option>Other</option>
+							</select>
+						</div>
+						<div class="form-group col-md-4">
+							<label for="input-english">English level</label>
+							<select id="input-english" class="form-control">
+								<option selected>Choose...</option>
+								<option>Native proficiency</option>
+								<option>Bilingual proficiency</option>
+								<option>Full professional proficiency</option>
+								<option>Professional working proficiency</option>
+								<option>Limited working proficiency</option>
+								<option>Elementary proficiency</option>
+								<option>No proficiency</option>
+							</select>
+						</div>
+						<div class="form-group col-md-4">
+							<label for="input-education">Current education level</label>
+							<select id="input-education" class="form-control">
+								<option selected>Choose...</option>
+								<option>Not a high school graduate</option>
+								<option>High school graduate</option>
+								<option>Some college, no degree</option>
+								<option>Bachelor's degree</option>
+								<option>Master's degree</option>
+								<option>Doctoral degree</option>
+							</select>
+						</div>
+					</div>
+					<!-- Rates -->
+					<div class="row">
+						<div class="col-md-6">
+							<div class="form-group">
+								<label for="input-memory">How good is your memory?</label>
+								<input type="range" class="custom-range" min="1" max="10" step="1" id="input-memory">
+								<div class="row">
+									<div class="col-md-6"><small id="input-memory-help1" class="form-text text-muted">Bad</small></div>
+									<div class="col-md-6"><small id="input-memory-help2" class="form-text text-muted" align="right">Good</small></div>
+								</div>
+							</div>
+							<div class="form-group">
+								<label for="input-health">How is your health condition?</label>
+								<input type="range" class="custom-range" min="1" max="10" step="1" id="input-health">
+								<div class="row">
+									<div class="col-md-6"><small id="input-memory-help1" class="form-text text-muted">Serious health problems</small></div>
+									<div class="col-md-6"><small id="input-memory-help2" class="form-text text-muted" align="right">Healthy</small></div>
+								</div>
+							</div>
+						</div>
+						<div class="col-md-6">
+							<div class="form-group">
+								<label for="input-internet">How much do you use the Internet?</label>
+								<input type="range" class="custom-range" min="1" max="10" step="1" id="input-internet">
+								<div class="row">
+									<div class="col-md-6"><small id="input-internet-help1" class="form-text text-muted">Zero use (stone age)</small></div>
+									<div class="col-md-6"><small id="input-internet-help2" class="form-text text-muted" align="right">Whenever awake</small></div>
+								</div>
+							</div>
+							<div class="form-group">
+								<label for="input-video">How much do you use YouTube/Vine?</label>
+								<input type="range" class="custom-range" min="1" max="10" step="1" id="input-video">
+								<div class="row">
+									<div class="col-md-6"><small id="input-video-help1" class="form-text text-muted">Zero use (stone age)</small></div>
+									<div class="col-md-6"><small id="input-video-help2" class="form-text text-muted" align="right">Whenver awake</small></div>
+								</div>
+							</div>
+						</div>
+					</div>
+				</form>
+				<!-- Time sync test -->
+				<div id="time"></div>
+				<!-- Emotion Face Capture and Selection -->
+				<div id="div-emotions" class="d-none row">
+					<div class="col-md-4" id="div-happy">
+						<img id="img-happy" height="240" width="320" class="rounded mx-auto d-block">
+						<button type="button" class="btn btn-outline-primary btn-block btn-lg" id="btn-happy">Capture a happy face</button>
+					</div>
+					<div class="col-md-4" id="div-sad">
+						<img id="img-sad" height="240" width="320" class="rounded mx-auto d-block">
+						<button type="button" class="btn btn-outline-primary btn-block btn-lg" id="btn-sad">Capture a sad face</button>
+					</div>
+					<div class="col-md-4" id="div-angry">
+						<img id="img-angry" height="240" width="320" class="rounded mx-auto d-block">
+						<button type="button" class="btn btn-outline-primary btn-block btn-lg" id="btn-angry">Capture an angry face</button>
+					</div>
+				</div>
+			</div>
+		</div>
+		<!-- Tutorial -->
+		<div class="d-none row" id="div-tutorial">
+			<div class="col-md-12">
+				<video id="video-tutorial" width="100%" src="test.mp4" controls>Fail to load tutorial.</video>
+			</div>
+		</div>
+		<!-- Test -->
+		<div class="d-none row" id="div-test">
+			<div class="col-md-12">
+				<video id="video-test" width="100%">Fail to load test video.</video>
+			</div>
+		</div>
+		<!-- Next Button -->
+		<div class="row">
+			<div class="col-md-12">
+				<button type="button" class="btn btn-outline-primary btn-block btn-lg" onclick="nextpage()" id="step">Next</button>
+			</div>
+		</div>
+		<!-- Result -->
+		<div class="d-none row" id="div-result">
+			<div class="col-md-12">
+				<video controls id="result-video"></video-->
+			</div>
+		</div>
+		<div class="d-none row" id="div-p">
+			<div class="col-md-12">
+				<p id="p-result"></p>
+			</div>
+		</div>
 	</div>
-	<div id="time"></div>
-	<div id="emotions" class="row"></div>
-	<div id="msg" style="display: none;">
-		<h4>Start the experiment by clicking "Next".</h4>
-	</div>
-	<div id="test" style="display: none;">
-		<div></div>
-		<video id="testVideo" width="100%">Fail to load test video.</video>
-	</div>
-	<div id="cam" style="width: 320px; height: 240px;">
-		<div></div>
-		<video autoplay playsinline muted id="webcam" style="width: 320px; height: 240px;"></video>
-	</div>
-	<div id="tutorial" style="display: none;">
-		<div></div>
-		<video id="tutorialVideo" width="100%" src="test.mp4" controls>Fail to load tutorial.</video>
-	</div>
-	<script type="text/javascript" src="webcam.min.js"></script>
-	<button onclick="nextpage()" id="step">Next</button>
-	<!-- Webcam set up -->
-	<script language="JavaScript">
-		Webcam.set({
-			width: 320,
-			height: 240,
-			image_format: 'jpeg',
-			jpeg_quality: 90
-		});
-		Webcam.attach("cam");
-	</script>
-	<script src="home.js"></script>
+	<!-- Load New Webcam -->
+	<script src="https://cdn.webrtc-experiment.com/RecordRTC.js"></script>
+	<script src="https://webrtc.github.io/adapter/adapter-latest.js"></script>
+	<!--script type="text/javascript" src="webcam.min.js"></script-->
+
+	<!-- Optional JavaScript -->
+    <!-- jQuery first, then Popper.js, then Bootstrap JS -->
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js" integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49" crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.1/js/bootstrap.min.js" integrity="sha384-smHYKdLADwkXOn1EmN1qk/HfnUcbVRZyYmZ4qpPea6sjB/pTJ0euyQp0Mk8ck+5T" crossorigin="anonymous"></script>
+
+    <script src="home.js"></script>
 </body>
 </html>

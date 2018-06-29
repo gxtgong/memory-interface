@@ -1,3 +1,27 @@
+// Gif Webcam set up
+function captureCamera(callback) {
+    navigator.mediaDevices.getUserMedia({ video: true }).then(function(camera) {
+        callback(camera);
+    }).catch(function(error) {
+        alert('Unable to capture your camera. Please check console logs.');
+        console.error(error);
+    });
+}
+
+
+/*function stopRecordingCallback() {
+    document.getElementById('tempmsg').innerHTML = 'Gif recording stopped: ' + bytesToSize(recorder.getBlob().size);
+    image.src = URL.createObjectURL(recorder.getBlob());
+    recorder.camera.stop();
+    recorder.destroy();
+    recorder = null;
+}*/
+
+// Global variables
+
+var gifrecorder;
+var vidrecorder;
+
 var page_num = 1;
 var test_count = 0;
 var fname;
@@ -9,6 +33,8 @@ var record = '';
 var es = ["happy", "sad", "angry"];
 var vs = ["test.mp4#t=111,4260", "test.mp4#t=862,4260"];
 var uris = {};
+
+var vidresult = document.getElementById("result-video");
 
 //return a 15-digit number representing current time
 function timestamp() {
@@ -28,9 +54,16 @@ function timestamp() {
     return ""+year+month+date+minute+sec+msec;
 }
 
-setInterval(function() {
-    document.getElementById("time").innerHTML = "Time: "+timestamp();
-}, 1000);
+captureCamera(function(camera) {
+    setSrcObject(camera, vidresult);
+    //vidresult.play();
+    vidrecorder = RecordRTC(camera, {
+        type: 'video'
+    });
+    vidrecorder.startRecording();
+    vidrecorder.camera = camera;
+});
+record += "video start" + timestamp() + "\n";
 
 function nextpage() {
     if (page_num == 1) {
@@ -46,64 +79,70 @@ function nextpage() {
 
 //collect basic info
 function p1() {
-    fname = document.getElementById("firstname").value;
-    lname = document.getElementById("lastname").value;
-    age = document.getElementById("age").value;
-    var p = document.getElementById("prob").checked;
+    fname = document.getElementById("input-firstname").value;
+    lname = document.getElementById("input-lastname").value;
+    age = +document.getElementById("input-age").value;
     if (fname == "") {
     	alert("Please input your first name.");
     } else if (lname === "") {
     	alert("Please input your last name.");
-    } else if (age == 0) {
+    } else if (age == NaN || age < 1 || age > 100) {
     	alert("Please input your age.");
-    } else if (!p) {
-    	alert("Please check the box.")
-    } else {
-        //collect input and set up image capture
+    } else {  //collect input and set up image capture
         record += fname + ' ' + lname + " (age " + age + ")\n";
-    	document.getElementById("user").innerHTML = "User: " + fname + " " + lname + " Age: " + age;
-        var i;
-        var e_div = document.getElementById("emotions");
-        for (i=0; i < es.length; i++) {
-            var e = es[i];
-            e_div.innerHTML += "<div id=\'"+e+"\' class='column'><button onclick=\"captureEmotion(\'"+e+"\')\">Capture a "+e+" face.</button></div>";
-        }
+        //remove previous page
+        document.getElementById("userinput").classList.add('d-none');
+        document.getElementById("div-emotions").classList.remove('d-none');
+        document.getElementById("btn-happy").onclick = function(){captureEmotion("happy");};
+        document.getElementById("btn-sad").onclick = function(){captureEmotion("sad");};
+        document.getElementById("btn-angry").onclick = function(){captureEmotion("angry");};
         page_num ++;
     }
 };
 
 //hide emojis and play video
 function p2() {
-    var nPic = Object.keys(uris).length;
-    if (nPic == es.length) {
-        document.getElementById("emotions").style.display = "none";
-        document.getElementById("cam").style.display = "none";
-        document.getElementById("tutorial").style.display = "block";
+    if (document.getElementById("btn-happy").innerHTML != "Recapture"){
+        alert("Please capture a happy face.");
+    }else if (document.getElementById("btn-sad").innerHTML != "Recapture"){
+        alert("Please capture a sad face.");
+    }else if (document.getElementById("btn-angry").innerHTML != "Recapture"){
+        alert("Please capture an angry face.");
+    }else {
+        document.getElementById("div-emotions").classList.add('d-none');
+        document.getElementById("btn-happy").onclick = function(){selectEmotion("happy");};
+        document.getElementById("btn-happy").innerHTML = "Happy";
+        document.getElementById("btn-sad").onclick = function(){selectEmotion("sad");};
+        document.getElementById("btn-sad").innerHTML = "Sad";
+        document.getElementById("btn-angry").onclick = function(){selectEmotion("angry");};
+        document.getElementById("btn-angry").innerHTML = "Angry";
+        document.getElementById("div-tutorial").classList.remove('d-none');
         page_num ++;
-    }else{
-        alert("Please complete image capturing.");
     }
 }
 
 function p3() {
-    document.getElementById("tutorialVideo").pause();
-    document.getElementById("tutorial").style.display = "none";
-    document.getElementById("msg").style.display = "block";
+    document.getElementById("video-tutorial").pause();
+    document.getElementById("div-tutorial").classList.add('d-none');
+    document.getElementById("msg").classList.remove('d-none');
     page_num ++;
 }
 
 function p4() {
-    document.getElementById("step").style.display = "none";
+    document.getElementById("step").classList.add('d-none');
+    var t = document.getElementById("div-test");
+    var vid = document.getElementById("video-test");
+    var epanel = document.getElementById("div-emotions");
     var m = document.getElementById("msg");
-    m.style.display = "none";
-    m.innerHTML = "<h4>Select your response in 3 seconds.</h4>";
-    var t = document.getElementById("test");
-    var vid = document.getElementById("testVideo");
-    var epanel = document.getElementById("emotions");
+    m.classList.add('d-none');
+    m.innerHTML = "Select your response in 3 seconds.";
     timedTest(vid, t, m, epanel);
     setTimeout(function(){
-        m.innerHTML = "<h4>Test done.</h4><p>"+record.replace(/\n/g, "<br />")+"<\p>";
-        m.style.display = "block";
+        m.innerHTML = "Test done.";
+        document.getElementById("p-result").innerHTML = record.replace(/\n/g, "<br />")+"<\p>";
+        document.getElementById("p-result").classList.remove('d-none');
+        m.classList.remove('d-none');
+        document.getElementById("div-result").classList.remove('d-none');
     }, vs.length*10000);
     //page_num ++;*/
 }
@@ -111,38 +150,94 @@ function p4() {
 function timedTest(vid, t, m, epanel){
     // load and play video
     vid.src = vs[test_count];
-    t.style.display = "block";
-    record+="test "+test_count+" "+timestamp()+"\n";
+    t.classList.remove('d-none');
+    record+="test "+test_count+" video started "+timestamp()+"\n";
     vid.play();
     // after 6 sec, pause and message
     setTimeout(function(){
         vid.pause();
-        t.style.display = "none";
-        m.style.display = "block";
+        t.classList.add('d-none');
+        m.classList.remove('d-none');
+        record += "test "+test_count+" video stopped "+timestamp()+"\n";
+        setTimeout(function(){
+            record += "test "+test_count+" selection started "+timestamp()+"\n";
+            m.classList.add('d-none');
+            epanel.classList.remove('d-none');
+            setTimeout(function(){
+                epanel.classList.add('d-none');
+                record += "test "+test_count+" selection stopped "+timestamp()+"\n";
+                test_count ++;
+                if (test_count < vs.length) {
+                    timedTest(vid, t, m, epanel);
+                }else{
+                    endTest(m);
+                }
+            }, 3000);
+        }, 1000);
     }, 6000);
-    // after 1 sec, message gone and choose response
-    setTimeout(function(){
-        //clearSelection();
-        m.style.display = "none";
-        epanel.style.display = "block";
-    }, 7000);
-    // after 3 sec, response done and clear
-    setTimeout(function(){
-        epanel.style.display = "none";
-        test_count ++;
-        if (test_count < vs.length) {
-            timedTest(vid, t, m, epanel);
-        }
-    }, 10000);
 }
 
+function endTest(m){
+    m.innerHTML = "Test done.";
+    vidrecorder.stopRecording(function(){
+        vidresult.src = vidresult.srcObject = null;
+        vidresult.src = URL.createObjectURL(vidrecorder.getBlob());
+        //vidresult.play();
+        vidrecorder.camera.stop();
+        vidrecorder.destroy();
+        vidrecorder = null;
+    });
+    document.getElementById("p-result").innerHTML = record.replace(/\n/g, "<br />")+"<\p>";
+    document.getElementById("p-result").classList.remove('d-none');
+    m.classList.remove('d-none');
+    document.getElementById("div-result").classList.remove('d-none');
+    document.getElementById("div-p").classList.remove('d-none');
+    vidresult.play();
+}
+
+
 function captureEmotion(emotion) {
-    record += "capture "+emotion+" "+timestamp()+"\n";
-    Webcam.snap(
-        function(data_uri) {
-            document.getElementById(emotion).innerHTML = '<img src="' + data_uri + '"/><br><input type="radio" name="response" value="'+ emotion + '" id="b'+ emotion + '" onclick="selectEmotion(\''+emotion+'\')">' + emotion + "<br>";
-            uris[emotion] = data_uri;
+    record += emotion + " capture btn clicked " + timestamp() + "\n";
+    var btn = document.getElementById("btn-"+emotion);
+    var img = document.getElementById("img-"+emotion);
+    document.getElementById("btn-happy").disabled = true;
+    document.getElementById("btn-sad").disabled = true;
+    document.getElementById("btn-angry").disabled = true;
+    captureCamera(function(camera) {
+        btn.innerHTML = 'Waiting to start recording';
+        gifrecorder = RecordRTC(camera, {
+            type: 'gif',
+            frameRate: 1,
+            quality: 10,
+            width: 360,
+            hidden: 240,
+            onGifRecordingStarted: function() {
+                record += emotion + " capture started " + timestamp() + "\n";
+                btn.innerHTML = 'Recording started';
+                btn.classList.remove("btn-outline-primary");
+                btn.classList.add("btn-danger");
+            },
+            onGifPreview: function(gifURL) {
+                img.src = gifURL;
+            }
         });
+        gifrecorder.startRecording();
+        gifrecorder.camera = camera;
+        setTimeout(function(){
+            gifrecorder.stopRecording(function(){
+                img.src = URL.createObjectURL(gifrecorder.getBlob());
+                gifrecorder.camera.stop();
+                gifrecorder.destroy();
+                gifrecorder = null;
+                document.getElementById("btn-happy").disabled = false;
+                document.getElementById("btn-sad").disabled = false;
+                document.getElementById("btn-angry").disabled = false;
+                btn.innerHTML = "Recapture";
+                btn.classList.remove("btn-danger");
+                btn.classList.add("btn-outline-primary");
+            });
+        }, 3000);
+    });
 }
 
 function selectEmotion(emotion) {
