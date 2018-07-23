@@ -1,4 +1,4 @@
-// Gif Webcam set up
+// Webcam set up
 function captureCamera(callback) {
     navigator.mediaDevices.getUserMedia({ video: true }).then(function(camera) {
         callback(camera);
@@ -54,16 +54,66 @@ function timestamp() {
     return ""+year+month+date+minute+sec+msec;
 }
 
-captureCamera(function(camera) {
-    setSrcObject(camera, vidresult);
-    //vidresult.play();
-    vidrecorder = RecordRTC(camera, {
-        type: 'video'
+$(document).ready(function(){
+    captureCamera(function(camera) {
+        setSrcObject(camera, vidresult);
+        //vidresult.play();
+        vidrecorder = RecordRTC(camera, {
+            type: 'video',
+            width: 1280,
+            height: 720
+        });
+        vidrecorder.startRecording();
+        vidrecorder.camera = camera;
     });
-    vidrecorder.startRecording();
-    vidrecorder.camera = camera;
+    record += "video start" + timestamp() + "\n";
 });
-record += "video start" + timestamp() + "\n";
+
+function setCircularPositon(midH, midW) { //($("#middleBubble").height(), $("#middleBubble").width())
+    var divTop = ($("#divCircle").height() - midH)/2;//$($("#divCircle").height() - ("#middleBubble").height())/2;
+    var divLeft = ($("#divCircle").width() - midW)/2;//$($("#divCircle").width() - ("#middleBubble").width())/2;
+    $("#middleBubble").css("top",divTop + "px");
+    $("#middleBubble").css("left",divLeft + "px");
+    //Arrange the icons in a circle centered in the div
+    numItems = $( ".img-circle" ).length; //How many items are in the circle?
+    start = 0; //the angle to put the first image at. a number between 0 and 2pi
+    step = (2*Math.PI)/numItems; //calculate the amount of space to put between the items.
+    //Now loop through the buttons and position them in a circle
+    $( ".img-circle" ).each(function( index ) {
+        radius = ($("#divCircle").width() - $(this).width())/2; //The radius is the distance from the center of the div to the middle of an icon
+        //the following lines are a standard formula for calculating points on a circle. x = cx + r * cos(a); y = cy + r * sin(a)
+        //We have made adjustments because the center of the circle is not at (0,0), but rather the top/left coordinates for the center of the div
+        //We also adjust for the fact that we need to know the coordinates for the top-left corner of the image, not for the center of the image.
+        tmpTop = (($("#divCircle").height()/2) + radius * Math.sin(start)) - ($(this).height()/2);
+        tmpLeft = (($("#divCircle").width()/2) + radius * Math.cos(start)) - ($(this).width()/2);
+        start += step; //add the "step" number of radians to jump to the next icon
+                 
+        //set the top/left settings for the image
+        $(this).css("top",tmpTop);
+        $(this).css("left",tmpLeft);
+    });
+    $( ".p-text" ).each(function ( index ) {
+        radius = ($("#divCircle").width() - $("#face-happy").width())/2; //The radius is the distance from the center of the div to the middle of an icon
+        //the following lines are a standard formula for calculating points on a circle. x = cx + r * cos(a); y = cy + r * sin(a)
+        //We have made adjustments because the center of the circle is not at (0,0), but rather the top/left coordinates for the center of the div
+        //We also adjust for the fact that we need to know the coordinates for the top-left corner of the image, not for the center of the image.
+        tmpTop = (($("#divCircle").height()/2) + radius * Math.sin(start)) - ($("#face-happy").height()/2);
+        tmpLeft = (($("#divCircle").width()/2) + radius * Math.cos(start)) - ($("#face-happy").width()/2);
+        start += step; //add the "step" number of radians to jump to the next icon
+
+        // offset
+        tmpTop += 120;
+        tmpLeft += 30;
+        //set the top/left settings for the image
+        $(this).css("top",tmpTop);
+        $(this).css("left",tmpLeft);
+    });
+}
+
+$(document).ready(function() {setCircularPositon(135, 180);});
+
+
+
 
 function nextpage() {
     if (page_num == 1) {
@@ -79,9 +129,9 @@ function nextpage() {
 
 //collect basic info
 function p1() {
-    fname = document.getElementById("input-firstname").value;
-    lname = document.getElementById("input-lastname").value;
-    age = +document.getElementById("input-age").value;
+    fname = $("#input-firstname").value;
+    lname = $("#input-lastname").value;
+    age = +$("#input-age").value;
     if (fname == "") {
     	alert("Please input your first name.");
     } else if (lname === "") {
@@ -92,21 +142,31 @@ function p1() {
         record += fname + ' ' + lname + " (age " + age + ")\n";
         //remove previous page
         document.getElementById("userinput").classList.add('d-none');
+        document.getElementById("step").classList.add('d-none');
         document.getElementById("div-emotions").classList.remove('d-none');
-        document.getElementById("btn-happy").onclick = function(){captureEmotion("happy");};
-        document.getElementById("btn-sad").onclick = function(){captureEmotion("sad");};
-        document.getElementById("btn-angry").onclick = function(){captureEmotion("angry");};
+        $("#face-happy").click(function(){captureEmotionImg("happy");});
+        $("#face-sad").click(function(){captureEmotionImg("sad");});
+        $("#face-angry").click(function(){captureEmotionImg("angry");});
+        $("#face-fear").click(function(){captureEmotionImg("fear");});
+        $("#face-disgust").click(function(){captureEmotionImg("disgust");});
+        $("#face-surprise").click(function(){captureEmotionImg("surprise");});
+        $("#step-emo").css("position", "absolute");
+        $("#step-emo").css("bottom", 0);
+        $("#step-emo").css("right", 500);
+        //document.getElementById("btn-happy").onclick = function(){captureEmotionImg("happy");};
+        //document.getElementById("btn-sad").onclick = function(){captureEmotionImg("sad");};
+        //document.getElementById("btn-angry").onclick = function(){captureEmotionImg("angry");};
         page_num ++;
     }
 };
 
 //hide emojis and play video
 function p2() {
-    if (document.getElementById("btn-happy").innerHTML != "Recapture"){
+    /*if ($("#btn-happy").innerHTML != "Recapture"){
         alert("Please capture a happy face.");
-    }else if (document.getElementById("btn-sad").innerHTML != "Recapture"){
+    }else if ($("#btn-sad").innerHTML != "Recapture"){
         alert("Please capture a sad face.");
-    }else if (document.getElementById("btn-angry").innerHTML != "Recapture"){
+    }else if ($("#btn-angry").innerHTML != "Recapture"){
         alert("Please capture an angry face.");
     }else {
         document.getElementById("div-emotions").classList.add('d-none');
@@ -118,7 +178,19 @@ function p2() {
         document.getElementById("btn-angry").innerHTML = "Angry";
         document.getElementById("div-tutorial").classList.remove('d-none');
         page_num ++;
-    }
+    }*/
+    document.getElementById("div-emotions").classList.add('d-none');
+    $("#middleBubble").html('<img src="images/color_wheel_hole.png" height="400" width="400" id="color">');
+    $("#color").click(function(e){
+        var xPos = e.pageX - $("#color").offset().left;
+        var yPos = e.pageY - $("#color").offset().top;
+        $("#msg-emo").html("Coordinate: "+xPos+" "+yPos);
+        console.log(xPos, yPos);
+    });
+    setCircularPositon(280, 280);
+    document.getElementById("div-tutorial").classList.remove('d-none');
+    document.getElementById("step").classList.remove('d-none');
+    page_num ++;
 }
 
 function p3() {
@@ -182,7 +254,7 @@ function endTest(m){
     vidrecorder.stopRecording(function(){
         vidresult.src = vidresult.srcObject = null;
         vidresult.src = URL.createObjectURL(vidrecorder.getBlob());
-        //vidresult.play();
+        vidresult.play();
         vidrecorder.camera.stop();
         vidrecorder.destroy();
         vidrecorder = null;
@@ -192,7 +264,7 @@ function endTest(m){
     m.classList.remove('d-none');
     document.getElementById("div-result").classList.remove('d-none');
     document.getElementById("div-p").classList.remove('d-none');
-    vidresult.play();
+    //vidresult.play();
 }
 
 
@@ -239,6 +311,16 @@ function captureEmotion(emotion) {
         }, 3000);
     });
 }
+
+function captureEmotionImg(emotion) {
+    record += emotion + " capture btn clicked " + timestamp() + "\n";
+    Webcam.snap( function(data_uri) {
+        document.getElementById("face-"+emotion).src = data_uri;
+    })
+}
+
+
+
 
 function selectEmotion(emotion) {
     record += "select "+emotion+" "+timestamp()+ "\n";

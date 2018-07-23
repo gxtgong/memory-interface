@@ -1,0 +1,28 @@
+.video-circle {
+	border-radius: 50%;
+	object-fit: cover;
+}
+.img-circle {
+	border-radius: 50%;
+	object-fit: cover;
+	width: 21%;
+	height: 21%;
+	position: absolute;
+}
+.p-text {
+	position: absolute;
+}
+#divCircle {
+	width: 600px;
+	height: 600px;
+	position: relative;
+}
+#middleBubble {s
+	text-align: center;
+	vertical-align: top;
+	height: 50%;
+	width: 50%;
+	margin: auto;
+	position: absolute;
+	text-align: center;
+}
