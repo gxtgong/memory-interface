@@ -16,7 +16,7 @@ is used with parameters adjusted.
 ## Usage
 Add your own `test.mp4` file to use the interface.
 
-To disable the back button of the browser, the multiple pages are organized and fully controlled by the js file as the following.
+To disable the back button of the browser, the multiple pages are organized and fully controlled by the js file.
 ### Page 1: Basic information
 Current version collects the following basic information:
 * First name (Required)
