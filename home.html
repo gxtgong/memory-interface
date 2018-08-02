@@ -8,6 +8,9 @@
     <!-- Bootstrap CSS -->
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.1/css/bootstrap.min.css" integrity="sha384-WskhaSGFgHYWDcbwN70/dfYBj47jz9qbsMId/iRN3ewGhXQFZCSftd1LZCfmhktB" crossorigin="anonymous">
 
+    <!-- JQuery -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.js"></script>
+
 	<!-- CSS -->
 	<link rel="stylesheet" type="text/css" href="home.css">
 
@@ -25,56 +28,56 @@
 		<div class="row">
 			<div class="col-md-12">
 				<!-- Basic Info -->
-				<form id="userinput">
+				<form id="userinput" data-toggle="validator">
 					<!-- Name, Age -->
 					<div class="form-row">
 						<div class="form-group col-md-5">
 							<label for="input-firstname">First name</label>
-							<input type="text" class="form-control" placeholder="First name" id="input-firstname">
+							<input type="text" class="form-control" placeholder="First name" id="input-firstname" type="text" required>
 						</div>
 						<div class="form-group col-md-5">
 							<label for="input-lastname">Last name</label>
-							<input type="text" class="form-control" placeholder="Last name" id="input-lastname">
+							<input type="text" class="form-control" placeholder="Last name" id="input-lastname" type="text" required>
 						</div>
 						<div class="form-group col-md-2">
 							<label for="input-age">Age</label>
-							<input type="text" class="form-control" placeholder="Age" id="input-age">
+							<input class="form-control" placeholder="Age" id="input-age" type="number" min=6 max=90 required>
 						</div>
 					</div>
 					<!-- Categories -->
 					<div class="form-row">
 						<div class="form-group col-md-4">
 							<label for="input-gender">Gender</label>
-							<select id="input-gender" class="form-control">
-								<option selected>Choose...</option>
-								<option>Male</option>
-								<option>Female</option>
-								<option>Other</option>
+							<select id="input-gender" class="form-control" required>
+								<option value="">Choose...</option>
+								<option value="male">Male</option>
+								<option value="female">Female</option>
+								<option value="other">Other</option>
 							</select>
 						</div>
 						<div class="form-group col-md-4">
 							<label for="input-english">English level</label>
-							<select id="input-english" class="form-control">
-								<option selected>Choose...</option>
-								<option>Native proficiency</option>
-								<option>Bilingual proficiency</option>
-								<option>Full professional proficiency</option>
-								<option>Professional working proficiency</option>
-								<option>Limited working proficiency</option>
-								<option>Elementary proficiency</option>
-								<option>No proficiency</option>
+							<select id="input-english" class="form-control" required>
+								<option value="">Choose...</option>
+								<option value="Native proficiency">Native proficiency</option>
+								<option value="Bilingual proficiency">Bilingual proficiency</option>
+								<option value="Full professional proficiency">Full professional proficiency</option>
+								<option value="Professional working proficiency">Professional working proficiency</option>
+								<option value="Limited working proficiency">Limited working proficiency</option>
+								<option value="Elementary proficiency">Elementary proficiency</option>
+								<option value=">No proficiency">No proficiency</option>
 							</select>
 						</div>
 						<div class="form-group col-md-4">
 							<label for="input-education">Current education level</label>
-							<select id="input-education" class="form-control">
-								<option selected>Choose...</option>
-								<option>Not a high school graduate</option>
-								<option>High school graduate</option>
-								<option>Some college, no degree</option>
-								<option>Bachelor's degree</option>
-								<option>Master's degree</option>
-								<option>Doctoral degree</option>
+							<select id="input-education" class="form-control" required>
+								<option value="">Choose...</option>
+								<option value="Not a high school graduate">Not a high school graduate</option>
+								<option value="High school graduate">High school graduate</option>
+								<option value="Some college, no degree">Some college, no degree</option>
+								<option value="Bachelor's degree">Bachelor's degree</option>
+								<option value="Master's degree">Master's degree</option>
+								<option value="Doctoral degree">Doctoral degree</option>
 							</select>
 						</div>
 					</div>
@@ -124,7 +127,7 @@
 				<div id="div-emotions" class="d-none row" style="text-align: center;">
 					<div class="col-md-12">
 						<h1 id="msg-emo" class="text-center">Click the picture to replace it with your corresponding face.</h1>
-						<button type="button" class="btn btn-primary text-center btn-lg" onclick="nextpage()" id="step-emo" >Next</button>
+						<button type="button" class="btn btn-primary text-center btn-lg" id="step-emo">Next</button>
 						<div id="divCircle">
 							<div id="middleBubble">
 								<div id="vid-emo"></div>
@@ -149,23 +152,6 @@
 						</div>
 					</div>
 				</div>
-				<!--div class="d-none row">
-					<div class="col-md-4" id="div-happy">
-						<div id="vid-happy"></div>
-						<img id="face-happy" class="img-circle">
-						<button type="button" class="btn btn-outline-primary btn-block btn-lg" id="btn-happy">Capture a happy face</button>
-					</div>
-					<div class="col-md-4" id="div-sad">
-						<div id="vid-sad"></div>
-						<img id="face-sad" class="img-circle">
-						<button type="button" class="btn btn-outline-primary btn-block btn-lg" id="btn-sad">Capture a sad face</button>
-					</div>
-					<div class="col-md-4" id="div-angry">
-						<div id="vid-angry"></div>
-						<img id="face-angry" class="img-circle">
-						<button type="button" class="btn btn-outline-primary btn-block btn-lg" id="btn-angry">Capture an angry face</button>
-					</div>
-				</div-->
 			</div>
 		</div>
 		<!-- Tutorial -->
@@ -189,7 +175,7 @@
 		<!-- Result -->
 		<div class="d-none row" id="div-result">
 			<div class="col-md-12">
-				<video controls id="result-video"></video-->
+				<video controls id="result-video"></video>
 			</div>
 		</div>
 		<div class="d-none row" id="div-p">
@@ -219,8 +205,9 @@
 	<!--script type="text/javascript" src="webcam.min.js"></script-->
 
 
-    <!-- jQuery first, then Popper.js, then Bootstrap JS -->
-    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+	<!-- Optional JavaScript -->
+    <!-- Popper.js, then Bootstrap JS -->
+    
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js" integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49" crossorigin="anonymous"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.1/js/bootstrap.min.js" integrity="sha384-smHYKdLADwkXOn1EmN1qk/HfnUcbVRZyYmZ4qpPea6sjB/pTJ0euyQp0Mk8ck+5T" crossorigin="anonymous"></script>
 

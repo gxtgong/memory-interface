@@ -24,10 +24,11 @@ var vidrecorder;
 
 var page_num = 1;
 var test_count = 0;
-var fname;
-var lname;
-var age;
 var record = '';
+
+var userData = {};
+
+
 
 
 var es = ["happy", "sad", "angry"];
@@ -37,21 +38,33 @@ var uris = {};
 var vidresult = document.getElementById("result-video");
 
 //return a 15-digit number representing current time
-function timestamp() {
+function timestamp(raw=false) {
     var d = new Date();
-    var year = d.getFullYear();
-    var month = d.getMonth();
+
+    if (raw) {
+        return d.getTime();
+    }
+    
+    var year = d.getFullYear()+"/";
+    var month = d.getMonth()+1;
     if (month<10) {month="0"+month;}
+    month += "/";
     var date = d.getDate();
     if (date<10) {date="0"+date;}
+    date += "/";
+    var hour = d.getHours();
+    if (hour<10) {hour="0"+hour;}
+    hour += ":";
     var minute = d.getMinutes();
     if (minute<10) {minute="0"+minute;}
+    minute += ":";
     var sec = d.getSeconds();
     if (sec<10) {sec="0"+sec;}
+    sec += ":";
     var msec = d.getMilliseconds();
     if (msec<10) {msec="0"+msec;}
     if (msec<100) {msec="0"+msec;}
-    return ""+year+month+date+minute+sec+msec;
+    return year+month+date+hour+minute+sec+msec;
 }
 
 $(document).ready(function(){
@@ -66,7 +79,8 @@ $(document).ready(function(){
         vidrecorder.startRecording();
         vidrecorder.camera = camera;
     });
-    record += "video start" + timestamp() + "\n";
+    userData.startTime = timestamp();
+    setCircularPositon(135, 180);
 });
 
 function setCircularPositon(midH, midW) { //($("#middleBubble").height(), $("#middleBubble").width())
@@ -110,7 +124,6 @@ function setCircularPositon(midH, midW) { //($("#middleBubble").height(), $("#mi
     });
 }
 
-$(document).ready(function() {setCircularPositon(135, 180);});
 
 
 
@@ -129,17 +142,22 @@ function nextpage() {
 
 //collect basic info
 function p1() {
-    fname = $("#input-firstname").value;
-    lname = $("#input-lastname").value;
-    age = +$("#input-age").value;
-    if (fname == "") {
-    	alert("Please input your first name.");
-    } else if (lname === "") {
-    	alert("Please input your last name.");
-    } else if (age == NaN || age < 1 || age > 100) {
-    	alert("Please input your age.");
-    } else {  //collect input and set up image capture
-        record += fname + ' ' + lname + " (age " + age + ")\n";
+    var input = document.getElementById("userinput");
+    console.log(input.checkValidity());
+    if (input.reportValidity()) {
+        //collect input and set up image capture
+        userData.firstName = input.elements[0].value;
+        userData.lastName = input.elements[1].value;
+        userData.age = input.elements[2].value;
+        userData.gender = input.elements[3].value;
+        userData.english = input.elements[4].value;
+        userData.education = input.elements[5].value;
+        userData.memory = input.elements[6].value;
+        userData.internet = input.elements[7].value;
+        userData.health = input.elements[8].value;
+        userData.youtube = input.elements[9].value;
+        userData.fileName = userData.startTime.substring(5, 10).replace("/","") + userData.lastName + userData.firstName[0];
+        console.log("INPUT "+ JSON.stringify(userData, null, 4));
         //remove previous page
         document.getElementById("userinput").classList.add('d-none');
         document.getElementById("step").classList.add('d-none');
@@ -150,53 +168,53 @@ function p1() {
         $("#face-fear").click(function(){captureEmotionImg("fear");});
         $("#face-disgust").click(function(){captureEmotionImg("disgust");});
         $("#face-surprise").click(function(){captureEmotionImg("surprise");});
-        $("#step-emo").css("position", "absolute");
-        $("#step-emo").css("bottom", 0);
-        $("#step-emo").css("right", 500);
-        //document.getElementById("btn-happy").onclick = function(){captureEmotionImg("happy");};
-        //document.getElementById("btn-sad").onclick = function(){captureEmotionImg("sad");};
-        //document.getElementById("btn-angry").onclick = function(){captureEmotionImg("angry");};
+        $("#step-emo").click(function(){nextpage();});
         page_num ++;
+        //input.classList.add('was-validated');
+    }else{
     }
 };
 
 //hide emojis and play video
 function p2() {
-    /*if ($("#btn-happy").innerHTML != "Recapture"){
-        alert("Please capture a happy face.");
-    }else if ($("#btn-sad").innerHTML != "Recapture"){
-        alert("Please capture a sad face.");
-    }else if ($("#btn-angry").innerHTML != "Recapture"){
-        alert("Please capture an angry face.");
-    }else {
-        document.getElementById("div-emotions").classList.add('d-none');
-        document.getElementById("btn-happy").onclick = function(){selectEmotion("happy");};
-        document.getElementById("btn-happy").innerHTML = "Happy";
-        document.getElementById("btn-sad").onclick = function(){selectEmotion("sad");};
-        document.getElementById("btn-sad").innerHTML = "Sad";
-        document.getElementById("btn-angry").onclick = function(){selectEmotion("angry");};
-        document.getElementById("btn-angry").innerHTML = "Angry";
-        document.getElementById("div-tutorial").classList.remove('d-none');
-        page_num ++;
-    }*/
-    document.getElementById("div-emotions").classList.add('d-none');
-    $("#middleBubble").html('<img src="images/color_wheel_hole.png" height="400" width="400" id="color">');
-    $("#color").click(function(e){
-        var xPos = e.pageX - $("#color").offset().left;
-        var yPos = e.pageY - $("#color").offset().top;
-        $("#msg-emo").html("Coordinate: "+xPos+" "+yPos);
-        console.log(xPos, yPos);
+    var emotionArray = ['happy', 'sad', 'angry', 'fear', 'disgust', 'surprise']
+    var completed = emotionArray.filter(function(emotion){
+        return userData.hasOwnProperty(emotion);
     });
-    setCircularPositon(280, 280);
-    document.getElementById("div-tutorial").classList.remove('d-none');
-    document.getElementById("step").classList.remove('d-none');
-    page_num ++;
+    if (completed.length == 6) {
+        document.getElementById("div-emotions").classList.add('d-none');
+        document.getElementById("step-emo").classList.add('d-none');
+        document.getElementById("msg-emo").innerHTML = "Select an emotion coordinate.";
+        $("#face-happy").unbind("click");
+        $("#face-sad").unbind("click");
+        $("#face-angry").unbind("click");
+        $("#face-fear").unbind("click");
+        $("#face-disgust").unbind("click");
+        $("#face-surprise").unbind("click");
+        userData.test = {};
+        $("#middleBubble").html('<img src="images/color_wheel_hole.png" height="400" width="400" id="color">');
+        $("#color").click(function(e){
+            var xPos = e.pageX - $("#color").offset().left;
+            var yPos = e.pageY - $("#color").offset().top;
+            $("#msg-emo").html("Coordinate: "+xPos+" "+yPos);
+            console.log(xPos, yPos);
+            userData.test[test_count]["coordinate"].unshift([xPos, yPos]);
+        });
+        setCircularPositon(280, 280);
+        document.getElementById("div-tutorial").classList.remove('d-none');
+        document.getElementById("step").classList.remove('d-none');
+        page_num ++;
+    } else {
+        alert("Please complete all captures.");
+    }
 }
 
 function p3() {
     document.getElementById("video-tutorial").pause();
     document.getElementById("div-tutorial").classList.add('d-none');
     document.getElementById("msg").classList.remove('d-none');
+    document.getElementById("msg").style.marginTop = "100px";
+    document.getElementById("msg").style.marginBottom = "10px";
     page_num ++;
 }
 
@@ -209,13 +227,13 @@ function p4() {
     m.classList.add('d-none');
     m.innerHTML = "Select your response in 3 seconds.";
     timedTest(vid, t, m, epanel);
-    setTimeout(function(){
+    /*setTimeout(function(){
         m.innerHTML = "Test done.";
         document.getElementById("p-result").innerHTML = record.replace(/\n/g, "<br />")+"<\p>";
         document.getElementById("p-result").classList.remove('d-none');
         m.classList.remove('d-none');
         document.getElementById("div-result").classList.remove('d-none');
-    }, vs.length*10000);
+    }, vs.length*10000);*/
     //page_num ++;*/
 }
 
@@ -223,21 +241,23 @@ function timedTest(vid, t, m, epanel){
     // load and play video
     vid.src = vs[test_count];
     t.classList.remove('d-none');
-    record+="test "+test_count+" video started "+timestamp()+"\n";
+    userData.test[test_count] = {"videoStart": timestamp(true)};
+    userData.test[test_count]["coordinate"] = [];
     vid.play();
     // after 6 sec, pause and message
     setTimeout(function(){
         vid.pause();
         t.classList.add('d-none');
         m.classList.remove('d-none');
-        record += "test "+test_count+" video stopped "+timestamp()+"\n";
+        userData.test[test_count]["videoStop"] = timestamp(true);
         setTimeout(function(){
-            record += "test "+test_count+" selection started "+timestamp()+"\n";
+            userData.test[test_count]["selectionStart"] = timestamp(true);
             m.classList.add('d-none');
             epanel.classList.remove('d-none');
             setTimeout(function(){
                 epanel.classList.add('d-none');
-                record += "test "+test_count+" selection stopped "+timestamp()+"\n";
+                document.getElementById("msg-emo").innerHTML = "Select an emotion coordinate.";
+                userData.test[test_count]["selectionStop"] = timestamp(true);
                 test_count ++;
                 if (test_count < vs.length) {
                     timedTest(vid, t, m, epanel);
@@ -251,6 +271,7 @@ function timedTest(vid, t, m, epanel){
 
 function endTest(m){
     m.innerHTML = "Test done.";
+    //m.style.marginTop = "0px";
     vidrecorder.stopRecording(function(){
         vidresult.src = vidresult.srcObject = null;
         vidresult.src = URL.createObjectURL(vidrecorder.getBlob());
@@ -259,17 +280,20 @@ function endTest(m){
         vidrecorder.destroy();
         vidrecorder = null;
     });
-    document.getElementById("p-result").innerHTML = record.replace(/\n/g, "<br />")+"<\p>";
+    document.getElementById("p-result").innerHTML = "saved";//JSON.stringify(userData, null, 4).replace(/\n/g, "<br />");
     document.getElementById("p-result").classList.remove('d-none');
     m.classList.remove('d-none');
     document.getElementById("div-result").classList.remove('d-none');
     document.getElementById("div-p").classList.remove('d-none');
+    $.post(userData.fileName+'.json', JSON.stringify(userData, null, 4), function(data, status){
+        console.log("Data: "+ data + " Status: " + status);
+    });
     //vidresult.play();
 }
 
 
 function captureEmotion(emotion) {
-    record += emotion + " capture btn clicked " + timestamp() + "\n";
+    userData.emotion = timestamp(true);
     var btn = document.getElementById("btn-"+emotion);
     var img = document.getElementById("img-"+emotion);
     document.getElementById("btn-happy").disabled = true;
@@ -313,7 +337,7 @@ function captureEmotion(emotion) {
 }
 
 function captureEmotionImg(emotion) {
-    record += emotion + " capture btn clicked " + timestamp() + "\n";
+    userData[emotion] = timestamp(true);
     Webcam.snap( function(data_uri) {
         document.getElementById("face-"+emotion).src = data_uri;
     })
