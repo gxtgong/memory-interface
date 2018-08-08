@@ -12,10 +12,21 @@
 	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.js"></script>
 
 	<!-- CSS -->
-	<link rel="stylesheet" type="text/css" href="home.css">
+	<!--link rel="stylesheet" type="text/css" href="home.css"-->
 
     <title>Test</title>
-    <style></style>
+    <style>
+    	.img-circle{
+    		height: 100px;
+    		width: 100px;
+    		position: absolute;
+    		border-radius: 50%;
+    		object-fit: cover;
+    	}
+    	.p-text{
+    		position: absolute;
+    	}
+    </style>
 </head>
 <body>
 	<div class="container-fluid">
@@ -126,44 +137,46 @@
 				<!-- Emotion Face Capture and Selection -->
 				<div id="div-emotions" class="d-none row" style="text-align: center;">
 					<div class="col-md-12">
-						<h1 id="msg-emo" class="text-center">Click the picture to replace it with your corresponding face.</h1>
-						<button type="button" class="btn btn-primary text-center btn-lg" id="step-emo">Next</button>
-						<div id="divCircle">
-							<div id="middleBubble">
-								<div id="vid-emo"></div>
-							</div>
+						<div class="row"><div class="col-md-12">
+							<h1 id="msg-emo" class="text-center">Click the picture to replace it with your corresponding face.</h1>
+							<button type="button" class="btn btn-primary text-center btn-lg" id="step-emo">Next</button>
+						</div></div>
+						<div class="row"><div class="col-md-12"><div id="divCircle">
+							<div id="vid-emo" style="position: relative; top: 100px;"></div>
+							<img id="img-emotion" class="d-none" src="images/color_wheel_hole.png" style="height: 70vh; position: absolute; top: 100px;">
+							
 							<img id="face-happy" class="img-circle" src="images/happy.png">
-							<p id="text-happy" class="p-text">Happiness</p>
-							
+							<p id="text-happy" class="p-text">Happy</p>
+
+							<img id="face-surprise" class="img-circle" src="images/surprise.png">
+							<p id="text-surprise" class="p-text">Surprise</p>
+
 							<img id="face-sad" class="img-circle" src="images/sad.png">
-							<p id="text-sad" class="p-text">Sadness</p>
-							
-							<img id="face-angry" class="img-circle" src="images/angry.png">
-							<p id="text-angry" class="p-text">Anger</p>
+							<p id="text-sad" class="p-text">Sad</p>
 							
 							<img id="face-fear" class="img-circle" src="images/fear.png">
 							<p id="text-fear" class="p-text">Fear</p>
-							
+
 							<img id="face-disgust" class="img-circle" src="images/disgust.png">
 							<p id="text-disgust" class="p-text">Disgust</p>
-							
-							<img id="face-surprise" class="img-circle" src="images/surprise.png">
-							<p id="text-surprise" class="p-text">Surprise</p>
-						</div>
+
+							<img id="face-angry" class="img-circle" src="images/angry.png">
+							<p id="text-angry" class="p-text">Angry</p>
+						</div></div></div>
 					</div>
 				</div>
 			</div>
 		</div>
 		<!-- Tutorial -->
 		<div class="d-none row" id="div-tutorial">
-			<div class="col-md-12">
-				<video id="video-tutorial" width="100%" src="test.mp4" controls>Fail to load tutorial.</video>
+			<div class="col-md-12 text-center">
+				<video id="video-tutorial" style="max-height: 100vh; max-width: 100vw;" src="videodataset/Funny vine 2014 (bless me)-DoOXXRcxYHk.mp4" controls>Fail to load tutorial.</video>
 			</div>
 		</div>
 		<!-- Test -->
 		<div class="d-none row" id="div-test">
-			<div class="col-md-12">
-				<video id="video-test" width="100%">Fail to load test video.</video>
+			<div class="col-md-12 text-center">
+				<video id="video-test" style="max-height: 100vh; max-width: 100vw;">Fail to load test video.</video>
 			</div>
 		</div>
 		<!-- Next Button -->
@@ -174,7 +187,7 @@
 		</div>
 		<!-- Result -->
 		<div class="d-none row" id="div-result">
-			<div class="col-md-12">
+			<div class="col-md-12 text-center">
 				<video controls id="result-video"></video>
 			</div>
 		</div>

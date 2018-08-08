@@ -8,15 +8,6 @@ function captureCamera(callback) {
     });
 }
 
-
-/*function stopRecordingCallback() {
-    document.getElementById('tempmsg').innerHTML = 'Gif recording stopped: ' + bytesToSize(recorder.getBlob().size);
-    image.src = URL.createObjectURL(recorder.getBlob());
-    recorder.camera.stop();
-    recorder.destroy();
-    recorder = null;
-}*/
-
 // Global variables
 
 var gifrecorder;
@@ -28,11 +19,8 @@ var record = '';
 
 var userData = {};
 
-
-
-
-var es = ["happy", "sad", "angry"];
-var vs = ["test.mp4#t=111,4260", "test.mp4#t=862,4260"];
+//change this to your own video srcs
+var vs = ["videodataset/Chrish - Indie girl introduces us to her kitchen (Vine)-8SU0gFPMwP8.mp4", "videodataset/Fresh Like You Do-AeS1MNo5rCs.mp4"];
 var uris = {};
 
 var vidresult = document.getElementById("result-video");
@@ -80,48 +68,91 @@ $(document).ready(function(){
         vidrecorder.camera = camera;
     });
     userData.startTime = timestamp();
-    setCircularPositon(135, 180);
+    $("#vid-emo").css("left", ($(window).width() - $("#vid-emo").width())/2);
+    //setCircularPosition("#vid-emo");
 });
 
-function setCircularPositon(midH, midW) { //($("#middleBubble").height(), $("#middleBubble").width())
-    var divTop = ($("#divCircle").height() - midH)/2;//$($("#divCircle").height() - ("#middleBubble").height())/2;
-    var divLeft = ($("#divCircle").width() - midW)/2;//$($("#divCircle").width() - ("#middleBubble").width())/2;
-    $("#middleBubble").css("top",divTop + "px");
-    $("#middleBubble").css("left",divLeft + "px");
+function setCircularPosition(centerID) {
     //Arrange the icons in a circle centered in the div
     numItems = $( ".img-circle" ).length; //How many items are in the circle?
     start = 0; //the angle to put the first image at. a number between 0 and 2pi
     step = (2*Math.PI)/numItems; //calculate the amount of space to put between the items.
     //Now loop through the buttons and position them in a circle
+    var centerR = Math.max($(centerID).height(), $(centerID).width())/2;
+    var centerX = $(centerID).position().left + centerR;
+    var centerY = $(centerID).position().top + centerR;
     $( ".img-circle" ).each(function( index ) {
-        radius = ($("#divCircle").width() - $(this).width())/2; //The radius is the distance from the center of the div to the middle of an icon
-        //the following lines are a standard formula for calculating points on a circle. x = cx + r * cos(a); y = cy + r * sin(a)
-        //We have made adjustments because the center of the circle is not at (0,0), but rather the top/left coordinates for the center of the div
-        //We also adjust for the fact that we need to know the coordinates for the top-left corner of the image, not for the center of the image.
-        tmpTop = (($("#divCircle").height()/2) + radius * Math.sin(start)) - ($(this).height()/2);
-        tmpLeft = (($("#divCircle").width()/2) + radius * Math.cos(start)) - ($(this).width()/2);
+        //console.log(this.getAttribute('id'));
+        rimR = $(this).height();
+        radius = centerR + rimR; 
+        relativeX = radius * Math.cos(start);
+        relativeY = radius * Math.sin(start);
+        rleft = centerX+relativeX-rimR/2;
+        rtop = centerY+relativeY-rimR/2;
         start += step; //add the "step" number of radians to jump to the next icon
-                 
-        //set the top/left settings for the image
-        $(this).css("top",tmpTop);
-        $(this).css("left",tmpLeft);
+        $(this).css("top",rtop);
+        $(this).css("left", rleft);
     });
+    // set the position of texts
     $( ".p-text" ).each(function ( index ) {
-        radius = ($("#divCircle").width() - $("#face-happy").width())/2; //The radius is the distance from the center of the div to the middle of an icon
-        //the following lines are a standard formula for calculating points on a circle. x = cx + r * cos(a); y = cy + r * sin(a)
-        //We have made adjustments because the center of the circle is not at (0,0), but rather the top/left coordinates for the center of the div
-        //We also adjust for the fact that we need to know the coordinates for the top-left corner of the image, not for the center of the image.
-        tmpTop = (($("#divCircle").height()/2) + radius * Math.sin(start)) - ($("#face-happy").height()/2);
-        tmpLeft = (($("#divCircle").width()/2) + radius * Math.cos(start)) - ($("#face-happy").width()/2);
-        start += step; //add the "step" number of radians to jump to the next icon
-
+        // get the corresponding face
+        var face = $("#"+this.getAttribute('id').replace('text','face'));
         // offset
-        tmpTop += 120;
-        tmpLeft += 30;
+        tmpTop = face.position().top - 30;
+        tmpLeft =  face.position().left;
         //set the top/left settings for the image
         $(this).css("top",tmpTop);
         $(this).css("left",tmpLeft);
     });
+}
+
+function setMouseClick(){
+    $("#img-emotion").click(function(e){
+        xPos = e.pageX - $("#img-emotion").position().left;
+        yPos = e.pageY - $("#img-emotion").position().top - 55;
+        centerR = $("#img-emotion").height()/2;
+        $("#msg-emo").html("Press any key to reselect (Coordinate: "+xPos+" "+yPos+")");
+        $("#img-emotion").unbind("mousemove");
+        $("#img-emotion").unbind("click");
+        $(document).keypress(function(e){
+            setMouseEffect();
+            setMouseClick();
+        });
+    });
+}
+
+function setMouseEffect() {
+    $("#img-emotion").mousemove(function(e){
+        xPos = e.pageX - $("#img-emotion").position().left;
+        yPos = e.pageY - $("#img-emotion").position().top - 55;
+        centerR = $("#img-emotion").height()/2;
+        if (distance(xPos,yPos,centerR, centerR) < centerR){
+            $("#msg-emo").html("Coordinate: "+xPos+" "+yPos);
+            a = 2*centerR;
+            b = centerR;
+            //console.log(xPos, yPos);
+            start = 0;
+            step = (2*Math.PI)/6;
+            numItems = $( ".img-circle" ).length;
+            $( ".img-circle" ).each(function( index ) {
+                a = centerR + centerR*Math.cos(start);
+                b = centerR + centerR*Math.sin(start);
+                start += step;
+                d = distance(xPos,yPos,a,b);
+                size = 20 + 80 * Math.pow(1 - d/(2*centerR), 2);
+                //console.log("    FROM " + a + " " + b);
+                //console.log("    DISTANCE " + d);
+                //console.log("    SCALED SIZE " + size);
+                $(this).css("height", size);
+                $(this).css("width", size);
+            });
+            setCircularPosition("#img-emotion");
+        }
+    });
+}
+
+function distance(x,y,a,b){
+    return Math.sqrt((x-a)*(x-a)+(y-b)*(y-b));
 }
 
 
@@ -162,15 +193,12 @@ function p1() {
         document.getElementById("userinput").classList.add('d-none');
         document.getElementById("step").classList.add('d-none');
         document.getElementById("div-emotions").classList.remove('d-none');
-        $("#face-happy").click(function(){captureEmotionImg("happy");});
-        $("#face-sad").click(function(){captureEmotionImg("sad");});
-        $("#face-angry").click(function(){captureEmotionImg("angry");});
-        $("#face-fear").click(function(){captureEmotionImg("fear");});
-        $("#face-disgust").click(function(){captureEmotionImg("disgust");});
-        $("#face-surprise").click(function(){captureEmotionImg("surprise");});
+        $( ".img-circle" ).each(function(){
+            $(this).click(function(){captureEmotionImg(this.getAttribute('id').replace("face-", ""));});
+        });
         $("#step-emo").click(function(){nextpage();});
+        setCircularPosition("#vid-emo");
         page_num ++;
-        //input.classList.add('was-validated');
     }else{
     }
 };
@@ -183,24 +211,19 @@ function p2() {
     });
     if (completed.length == 6) {
         document.getElementById("div-emotions").classList.add('d-none');
+        var temp = document.getElementById("divCircle");
+        temp.removeChild(temp.childNodes[1]);
+        //document.getElementById("vid-emo").classList.add('d-none');
         document.getElementById("step-emo").classList.add('d-none');
+        document.getElementById("img-emotion").classList.remove('d-none');
         document.getElementById("msg-emo").innerHTML = "Select an emotion coordinate.";
-        $("#face-happy").unbind("click");
-        $("#face-sad").unbind("click");
-        $("#face-angry").unbind("click");
-        $("#face-fear").unbind("click");
-        $("#face-disgust").unbind("click");
-        $("#face-surprise").unbind("click");
-        userData.test = {};
-        $("#middleBubble").html('<img src="images/color_wheel_hole.png" height="400" width="400" id="color">');
-        $("#color").click(function(e){
-            var xPos = e.pageX - $("#color").offset().left;
-            var yPos = e.pageY - $("#color").offset().top;
-            $("#msg-emo").html("Coordinate: "+xPos+" "+yPos);
-            console.log(xPos, yPos);
-            userData.test[test_count]["coordinate"].unshift([xPos, yPos]);
+        $( ".img-circle" ).each(function(){
+            $(this).unbind("click");
         });
-        setCircularPositon(280, 280);
+        Webcam.reset();
+        userData.test = {};
+        
+        
         document.getElementById("div-tutorial").classList.remove('d-none');
         document.getElementById("step").classList.remove('d-none');
         page_num ++;
@@ -225,16 +248,8 @@ function p4() {
     var epanel = document.getElementById("div-emotions");
     var m = document.getElementById("msg");
     m.classList.add('d-none');
-    m.innerHTML = "Select your response in 3 seconds.";
+    m.innerHTML = "Select your response in 6 seconds.";
     timedTest(vid, t, m, epanel);
-    /*setTimeout(function(){
-        m.innerHTML = "Test done.";
-        document.getElementById("p-result").innerHTML = record.replace(/\n/g, "<br />")+"<\p>";
-        document.getElementById("p-result").classList.remove('d-none');
-        m.classList.remove('d-none');
-        document.getElementById("div-result").classList.remove('d-none');
-    }, vs.length*10000);*/
-    //page_num ++;*/
 }
 
 function timedTest(vid, t, m, epanel){
@@ -254,6 +269,13 @@ function timedTest(vid, t, m, epanel){
             userData.test[test_count]["selectionStart"] = timestamp(true);
             m.classList.add('d-none');
             epanel.classList.remove('d-none');
+            $("#img-emotion").css("left", ($(window).width() - $("#img-emotion").width())/2);
+            $( ".img-circle" ).each(function(){
+                $(this).css({"height":"100px", "width":"100px"});
+            });
+            setCircularPosition("#img-emotion");
+            setMouseEffect();
+            setMouseClick();
             setTimeout(function(){
                 epanel.classList.add('d-none');
                 document.getElementById("msg-emo").innerHTML = "Select an emotion coordinate.";
@@ -264,14 +286,13 @@ function timedTest(vid, t, m, epanel){
                 }else{
                     endTest(m);
                 }
-            }, 3000);
-        }, 1000);
-    }, 6000);
+            }, 6000); // response time
+        }, 1000); // break time
+    }, 6000); // video time
 }
 
 function endTest(m){
     m.innerHTML = "Test done.";
-    //m.style.marginTop = "0px";
     vidrecorder.stopRecording(function(){
         vidresult.src = vidresult.srcObject = null;
         vidresult.src = URL.createObjectURL(vidrecorder.getBlob());
@@ -280,59 +301,13 @@ function endTest(m){
         vidrecorder.destroy();
         vidrecorder = null;
     });
-    document.getElementById("p-result").innerHTML = "saved";//JSON.stringify(userData, null, 4).replace(/\n/g, "<br />");
-    document.getElementById("p-result").classList.remove('d-none');
+    //document.getElementById("p-result").innerHTML = "saved";//JSON.stringify(userData, null, 4).replace(/\n/g, "<br />");
+    //document.getElementById("p-result").classList.remove('d-none');
     m.classList.remove('d-none');
     document.getElementById("div-result").classList.remove('d-none');
     document.getElementById("div-p").classList.remove('d-none');
     $.post(userData.fileName+'.json', JSON.stringify(userData, null, 4), function(data, status){
         console.log("Data: "+ data + " Status: " + status);
-    });
-    //vidresult.play();
-}
-
-
-function captureEmotion(emotion) {
-    userData.emotion = timestamp(true);
-    var btn = document.getElementById("btn-"+emotion);
-    var img = document.getElementById("img-"+emotion);
-    document.getElementById("btn-happy").disabled = true;
-    document.getElementById("btn-sad").disabled = true;
-    document.getElementById("btn-angry").disabled = true;
-    captureCamera(function(camera) {
-        btn.innerHTML = 'Waiting to start recording';
-        gifrecorder = RecordRTC(camera, {
-            type: 'gif',
-            frameRate: 1,
-            quality: 10,
-            width: 360,
-            hidden: 240,
-            onGifRecordingStarted: function() {
-                record += emotion + " capture started " + timestamp() + "\n";
-                btn.innerHTML = 'Recording started';
-                btn.classList.remove("btn-outline-primary");
-                btn.classList.add("btn-danger");
-            },
-            onGifPreview: function(gifURL) {
-                img.src = gifURL;
-            }
-        });
-        gifrecorder.startRecording();
-        gifrecorder.camera = camera;
-        setTimeout(function(){
-            gifrecorder.stopRecording(function(){
-                img.src = URL.createObjectURL(gifrecorder.getBlob());
-                gifrecorder.camera.stop();
-                gifrecorder.destroy();
-                gifrecorder = null;
-                document.getElementById("btn-happy").disabled = false;
-                document.getElementById("btn-sad").disabled = false;
-                document.getElementById("btn-angry").disabled = false;
-                btn.innerHTML = "Recapture";
-                btn.classList.remove("btn-danger");
-                btn.classList.add("btn-outline-primary");
-            });
-        }, 3000);
     });
 }
 
@@ -342,9 +317,6 @@ function captureEmotionImg(emotion) {
         document.getElementById("face-"+emotion).src = data_uri;
     })
 }
-
-
-
 
 function selectEmotion(emotion) {
     record += "select "+emotion+" "+timestamp()+ "\n";
