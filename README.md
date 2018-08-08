@@ -10,6 +10,14 @@ If the code is working, the following line will be outputted and the interface w
 ```
 File server running on port 8000
 ```
+Change line 23 of `home.js` to an array of your own choice of video src's. For example:
+```javascript
+var vs = [
+    "videodataset/Chrish - Indie girl introduces us to her kitchen (Vine)-8SU0gFPMwP8.mp4", 
+    "videodataset/Fresh Like You Do-AeS1MNo5rCs.mp4"
+];
+```
+The name `vs` must be kept the same.
 
 ## Documentations
 
@@ -22,17 +30,15 @@ Two different webcams are used in this interface.
 
 ### Circular layout
 [jQuery – arrange items in a circle](http://www.connolly-technologies.com/jquery-arrange-items-in-a-circle/)
-is used with parameters adjusted.
+is rewrited and.
 
-## Usage
-Add your own `test.mp4` file to use the interface.
-
+## Process of the test
 To disable the back button of the browser, the multiple pages are organized and fully controlled by the js file.
 ### Page 1: Basic information
 Current version collects the following basic information:
-* First name (Required)
-* Last name (Required)
-* Age (Required)
+* First name
+* Last name
+* Age
 * Gender
 * English level
 * Education level
@@ -40,6 +46,8 @@ Current version collects the following basic information:
 * Health condition
 * Internet usage
 * Video service usage
+
+All of the above fields are required except that the last 4 entries are recorded as their default value 6 if the user does not interact with them.
 ### Page 2: Facial expressions
 A color wheel is displayed with six basic emotions.
 ### Page 3: Tutorial
@@ -49,7 +57,16 @@ A confirmation message appears before the test starts.
 ### Test pages
 The test runs in the following cycle:
 
-6 seconds of video -> 1 second break -> 3 second emotion selection -> ...
+6 seconds of video -> 1 second break -> 6 seconds of emotion selection -> ...
+#### Subpage 1: Video
+The maximum height and width of the video are set to be no greater than the window display. The controls are hidden and the video plays automatically.
+#### Subpage 2: Break
+A message will appear: "Select your response in 6 seconds."
+#### Subpage 3: Emotion selection
+A color wheel representing emotion coordinates will appear. As the mouse moves over the wheel, the faces around the wheel will resize accordingly. 
+
+After the mouse clicks somewhere on the wheel, a message will appear: "Press any key to reselect (Coordinate: x y)."
+
 
 ### End page
 The json file with all user data is saved under `[MM][DD][Last name][The Initial of first name].json`.
