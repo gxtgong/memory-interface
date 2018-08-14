@@ -319,6 +319,7 @@ function endTest(m){
         vidrecorder.camera.stop();
         //vidrecorder.destroy();
         //vidrecorder = null;
+        //postFiles();
     });
     //document.getElementById("p-result").innerHTML = "saved";//JSON.stringify(userData, null, 4).replace(/\n/g, "<br />");
     //document.getElementById("p-result").classList.remove('d-none');
@@ -329,8 +330,9 @@ function endTest(m){
         vidrecorder.save(userData['fileName']+'.webm');
     })
     $.post(userData.fileName+'.json', JSON.stringify(userData, null, 4), function(data, status){
-        if (status == success) {
-            $('#p-result').html('Data successfully saved under '+userData['fileName']+'.json');
+        if (status == "success") {
+            $('#presult-json').html('Data successfully saved under '+userData['fileName']+'.json');
+            postFiles();
         }
     });
 }
@@ -342,7 +344,32 @@ function captureEmotionImg(emotion) {
     })
 }
 
-function selectEmotion(emotion) {
-    record += "select "+emotion+" "+timestamp()+ "\n";
+
+// post video
+function postFiles() {
+    var blob = vidrecorder.getBlob();
+    // getting unique identifier for the file name
+    var fileName = userData['fileName'] + '.webm';
+
+    var file = new File([blob], fileName, {
+        type: 'video/webm'
+    });
+    xhr('/uploadFile', file, function(responseText) { //??
+        var fileURL = JSON.parse(responseText).fileURL;
+        $('#presult-video').html('Video successfully saved under '+fileName);
+    });
 }
 
+// XHR2/FormData
+function xhr(url, data, callback) {
+    var request = new XMLHttpRequest();
+    request.onreadystatechange = function() {
+        if (request.readyState == 4 && request.status == 200) {
+            callback(request.responseText);
+        }
+    };
+    request.open('POST', url);
+    var formData = new FormData();
+    formData.append('file', data);
+    request.send(formData);
+}
