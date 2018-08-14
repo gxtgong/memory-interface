@@ -2,22 +2,30 @@
 
 ## Usage
 
-This interface is built using node.js. To run the interface, run `server.js` using the following command-line argument:
+Install [node.js](https://nodejs.org/).
+
+Install a node.js module called "formidable" using the following command-line argument.
 ```
-$ node server.js
+npm install formidable
 ```
-If the code is working, the following line will be outputted and the interface will be served at `localhost:8000`.
-```
-File server running on port 8000
-```
-Change line 23 of `home.js` to an array of your own choice of video src's. For example:
+Change line 23 of `home.js` to an array of your own choice of video src's. Blank space is allowed in video names. The variable name `vs` must be kept the same.
+
+For example:
 ```javascript
 var vs = [
     "videodataset/Chrish - Indie girl introduces us to her kitchen (Vine)-8SU0gFPMwP8.mp4", 
     "videodataset/Fresh Like You Do-AeS1MNo5rCs.mp4"
 ];
 ```
-The name `vs` must be kept the same.
+To run the interface, run `server.js` using the following command-line argument:
+```
+$ node server.js
+```
+If the code is working, you will get the following response and the interface will be served at `localhost:8000`.
+```
+File server running on port 8000
+```
+
 
 ## Documentations
 
@@ -27,6 +35,8 @@ The name `vs` must be kept the same.
 Two different webcams are used in this interface. 
 * [RecordRTC](https://recordrtc.org/) is used for video recording throughout the entire process. 
 * [Webcam JS](https://github.com/jhuckaby/webcamjs) is used for creating snapshots to be displayed. 
+
+RecordRTC provides a way to access the recorded video through `node.js` in [RecordRTC to Node.js](https://github.com/muaz-khan/RecordRTC/tree/master/RecordRTC-to-Nodejs).
 
 ### Circular layout
 [jQuery – arrange items in a circle](http://www.connolly-technologies.com/jquery-arrange-items-in-a-circle/)
@@ -119,6 +129,3 @@ An example would be `0801SmithP.json`:
     }
 }
 ```
-
-## Unsolved Problems
-RecordRTC provides a way to post the recorded video through `node.js` in [RecordRTC to Node.js](https://github.com/muaz-khan/RecordRTC/tree/master/RecordRTC-to-Nodejs), but I have not figured out how to implement this feature here.
