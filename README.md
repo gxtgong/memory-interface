@@ -30,7 +30,7 @@ File server running on port 8000
 ## Documentations
 ### Webcams
 Two different webcams are used in this interface. 
-* [RecordRTC](https://recordrtc.org/) is used for video recording throughout the entire process. 
+* [RecordRTC](https://recordrtc.org/) is used for video recording throughout the entire process. It does not work well with Safari.
 * [Webcam JS](https://github.com/jhuckaby/webcamjs) is used for creating snapshots to be displayed. 
 
 RecordRTC provides a way to access the recorded video through `node.js` in [RecordRTC to Node.js](https://github.com/muaz-khan/RecordRTC/tree/master/RecordRTC-to-Nodejs).
