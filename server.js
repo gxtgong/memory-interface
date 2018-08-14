@@ -99,9 +99,9 @@ http.createServer(function(req, res) {
     	})
     	req.on("end", function() {
             name = JSON.parse(body).fileName;
-            fs.writeFileSync(name+".json", body);
             fs.writeFile(name+".json", body, function(){
                 console.log("WRITE data" + " TO " + name + ".json");
+                res.end();
             });
     	})
     }

@@ -112,6 +112,7 @@ function setMouseClick(){
         yPos = e.pageY - $("#img-emotion").position().top - 55;
         centerR = $("#img-emotion").height()/2;
         $("#msg-emo").html("Press any key to reselect (Coordinate: "+xPos+" "+yPos+")");
+        userData.test[test_count]["coordinate"].unshift([xPos,yPos]);
         $("#img-emotion").unbind("mousemove");
         $("#img-emotion").unbind("click");
         $(document).keypress(function(e){
@@ -243,6 +244,7 @@ function p3() {
 
 function p4() {
     document.getElementById("step").classList.add('d-none');
+    document.getElementById("div-bar").classList.remove('d-none');
     var t = document.getElementById("div-test");
     var vid = document.getElementById("video-test");
     var epanel = document.getElementById("div-emotions");
@@ -265,10 +267,27 @@ function timedTest(vid, t, m, epanel){
         t.classList.add('d-none');
         m.classList.remove('d-none');
         userData.test[test_count]["videoStop"] = timestamp(true);
+        document.getElementById('bar-time').style.width = '0%';
         setTimeout(function(){
+            function countDown() {
+                document.getElementById('bar-time').style.width = parseInt(100*currentWidth) + '%';
+                currentWidth += widthStep;
+                setTimeout(function(){
+                    if (currentWidth < 1) {
+                        countDown();
+                    }else{
+                        document.getElementById('bar-time').style.width = '100%';
+                    }
+                }, 100);
+            }
+            var widthStep = 120/6000;
+            var currentWidth = 0;
+            countDown();
+
             userData.test[test_count]["selectionStart"] = timestamp(true);
             m.classList.add('d-none');
             epanel.classList.remove('d-none');
+            
             $("#img-emotion").css("left", ($(window).width() - $("#img-emotion").width())/2);
             $( ".img-circle" ).each(function(){
                 $(this).css({"height":"100px", "width":"100px"});
@@ -298,16 +317,21 @@ function endTest(m){
         vidresult.src = URL.createObjectURL(vidrecorder.getBlob());
         vidresult.play();
         vidrecorder.camera.stop();
-        vidrecorder.destroy();
-        vidrecorder = null;
+        //vidrecorder.destroy();
+        //vidrecorder = null;
     });
     //document.getElementById("p-result").innerHTML = "saved";//JSON.stringify(userData, null, 4).replace(/\n/g, "<br />");
     //document.getElementById("p-result").classList.remove('d-none');
     m.classList.remove('d-none');
     document.getElementById("div-result").classList.remove('d-none');
     document.getElementById("div-p").classList.remove('d-none');
+    $("#save-result").click(function(){
+        vidrecorder.save(userData['fileName']+'.webm');
+    })
     $.post(userData.fileName+'.json', JSON.stringify(userData, null, 4), function(data, status){
-        console.log("Data: "+ data + " Status: " + status);
+        if (status == success) {
+            $('#p-result').html('Data successfully saved under '+userData['fileName']+'.json');
+        }
     });
 }
 
