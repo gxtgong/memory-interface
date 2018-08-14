@@ -28,9 +28,6 @@ File server running on port 8000
 
 
 ## Documentations
-
-### JQuery and Bootstrap
-
 ### Webcams
 Two different webcams are used in this interface. 
 * [RecordRTC](https://recordrtc.org/) is used for video recording throughout the entire process. 
