@@ -37,7 +37,7 @@ RecordRTC provides a way to access the recorded video through `node.js` in [Reco
 
 ### Circular layout
 [jQuery – arrange items in a circle](http://www.connolly-technologies.com/jquery-arrange-items-in-a-circle/)
-is rewrited and.
+is rewrited.
 
 ## Process of the test
 To disable the back button of the browser, the multiple pages are organized and fully controlled by the js file.
