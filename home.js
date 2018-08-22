@@ -107,6 +107,7 @@ function setCircularPosition(centerID) {
 }
 
 function setMouseClick(){
+    $("#img-emotion").unbind("click");
     $("#img-emotion").click(function(e){
         xPos = e.pageX - $("#img-emotion").position().left;
         yPos = e.pageY - $("#img-emotion").position().top - 55;
@@ -115,9 +116,10 @@ function setMouseClick(){
         userData.test[test_count]["coordinate"].unshift([xPos,yPos]);
         $("#img-emotion").unbind("mousemove");
         $("#img-emotion").unbind("click");
-        $(document).keypress(function(e){
+        $(document).keydown(function(e){
             setMouseEffect();
             setMouseClick();
+            $(document).unbind("keydown");
         });
     });
 }
@@ -216,6 +218,8 @@ function p2() {
         temp.removeChild(temp.childNodes[1]);
         //document.getElementById("vid-emo").classList.add('d-none');
         document.getElementById("step-emo").classList.add('d-none');
+        $("#step-emo").unbind("click");
+
         document.getElementById("img-emotion").classList.remove('d-none');
         document.getElementById("msg-emo").innerHTML = "Select an emotion coordinate.";
         $( ".img-circle" ).each(function(){
@@ -244,7 +248,7 @@ function p3() {
 
 function p4() {
     document.getElementById("step").classList.add('d-none');
-    document.getElementById("div-bar").classList.remove('d-none');
+    //document.getElementById("div-bar").classList.remove('d-none');
     var t = document.getElementById("div-test");
     var vid = document.getElementById("video-test");
     var epanel = document.getElementById("div-emotions");
@@ -267,9 +271,9 @@ function timedTest(vid, t, m, epanel){
         t.classList.add('d-none');
         m.classList.remove('d-none');
         userData.test[test_count]["videoStop"] = timestamp(true);
-        document.getElementById('bar-time').style.width = '0%';
+        //document.getElementById('bar-time').style.width = '0%';
         setTimeout(function(){
-            function countDown() {
+            /*function countDown() {
                 document.getElementById('bar-time').style.width = parseInt(100*currentWidth) + '%';
                 currentWidth += widthStep;
                 setTimeout(function(){
@@ -282,7 +286,7 @@ function timedTest(vid, t, m, epanel){
             }
             var widthStep = 120/6000;
             var currentWidth = 0;
-            countDown();
+            countDown();*/
 
             userData.test[test_count]["selectionStart"] = timestamp(true);
             m.classList.add('d-none');
@@ -295,7 +299,10 @@ function timedTest(vid, t, m, epanel){
             setCircularPosition("#img-emotion");
             setMouseEffect();
             setMouseClick();
-            setTimeout(function(){
+
+            $("#step-emo").removeClass('d-none');
+            $("#step-emo").unbind("click");
+            $("#step-emo").click(function(){
                 epanel.classList.add('d-none');
                 document.getElementById("msg-emo").innerHTML = "Select an emotion coordinate.";
                 userData.test[test_count]["selectionStop"] = timestamp(true);
@@ -305,7 +312,9 @@ function timedTest(vid, t, m, epanel){
                 }else{
                     endTest(m);
                 }
-            }, 6000); // response time
+            });
+
+            
         }, 1000); // break time
     }, 6000); // video time
 }
