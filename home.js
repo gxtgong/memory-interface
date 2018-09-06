@@ -24,6 +24,7 @@ var vs = ["videodataset/Chrish - Indie girl introduces us to her kitchen (Vine)-
 var uris = {};
 
 var vidresult = document.getElementById("result-video");
+var originalRimR = 0;
 
 //return a 15-digit number representing current time
 function timestamp(raw=false) {
@@ -83,12 +84,15 @@ function setCircularPosition(centerID) {
     var centerY = $(centerID).position().top + centerR;
     $( ".img-circle" ).each(function( index ) {
         //console.log(this.getAttribute('id'));
-        rimR = $(this).height();
-        radius = centerR + rimR; 
+        rimR = $(this).height()/2;
+        if (originalRimR == 0) {
+            originalRimR = rimR;
+        }
+        radius = centerR + originalRimR;//rimR; 
         relativeX = radius * Math.cos(start);
         relativeY = radius * Math.sin(start);
-        rleft = centerX+relativeX-rimR/2;
-        rtop = centerY+relativeY-rimR/2;
+        rleft = centerX+relativeX-rimR;
+        rtop = centerY+relativeY-rimR;
         start += step; //add the "step" number of radians to jump to the next icon
         $(this).css("top",rtop);
         $(this).css("left", rleft);
@@ -107,30 +111,37 @@ function setCircularPosition(centerID) {
 }
 
 function setMouseClick(){
-    $("#img-emotion").unbind("click");
-    $("#img-emotion").click(function(e){
+    $(document).unbind("click");
+    //$("#img-emotion").click(function(e){
+    $(document).click(function(e){
         xPos = e.pageX - $("#img-emotion").position().left;
-        yPos = e.pageY - $("#img-emotion").position().top - 55;
+        yPos = e.pageY - $("#img-emotion").position().top - 110;
         centerR = $("#img-emotion").height()/2;
-        $("#msg-emo").html("Press any key to reselect (Coordinate: "+xPos+" "+yPos+")");
-        userData.test[test_count]["coordinate"].unshift([xPos,yPos]);
-        $("#img-emotion").unbind("mousemove");
-        $("#img-emotion").unbind("click");
-        $(document).keydown(function(e){
-            setMouseEffect();
-            setMouseClick();
-            $(document).unbind("keydown");
-        });
+        //console.log("x y r "+xPos+" "+yPos+" "+centerR)
+        if (distance(xPos,yPos,centerR, centerR) < centerR){
+            $("#msg-emo").html("Press any key to reselect");
+            userData.test[test_count]["coordinate"].unshift([xPos/centerR,yPos/centerR]);
+            $("#marker").removeClass('d-none');
+            $("#marker").css({top: e.pageY - 115, left: e.pageX-10});
+            $("#img-emotion").unbind("mousemove");
+            $(document).unbind("click");
+            $(document).keydown(function(e){
+                setMouseEffect();
+                setMouseClick();
+                $("#marker").addClass('d-none');
+                $(document).unbind("keydown");
+            });
+        }
     });
 }
 
 function setMouseEffect() {
     $("#img-emotion").mousemove(function(e){
         xPos = e.pageX - $("#img-emotion").position().left;
-        yPos = e.pageY - $("#img-emotion").position().top - 55;
+        yPos = e.pageY - $("#img-emotion").position().top - 110;
         centerR = $("#img-emotion").height()/2;
-        if (distance(xPos,yPos,centerR, centerR) < centerR){
-            $("#msg-emo").html("Coordinate: "+xPos+" "+yPos);
+        if (distance(xPos,yPos, centerR, centerR) < centerR){
+            //$("#msg-emo").html("Coordinate: "+xPos+" "+yPos);
             a = 2*centerR;
             b = centerR;
             //console.log(xPos, yPos);
@@ -142,7 +153,7 @@ function setMouseEffect() {
                 b = centerR + centerR*Math.sin(start);
                 start += step;
                 d = distance(xPos,yPos,a,b);
-                size = 20 + 80 * Math.pow(1 - d/(2*centerR), 2);
+                size = 20 + (0.4*$(window).height()-20) * Math.pow(1 - d/(2*centerR), 2);
                 //console.log("    FROM " + a + " " + b);
                 //console.log("    DISTANCE " + d);
                 //console.log("    SCALED SIZE " + size);
@@ -254,7 +265,7 @@ function p4() {
     var epanel = document.getElementById("div-emotions");
     var m = document.getElementById("msg");
     m.classList.add('d-none');
-    m.innerHTML = "Select your response in 6 seconds.";
+    m.innerHTML = "Select your response";
     timedTest(vid, t, m, epanel);
 }
 
@@ -304,6 +315,7 @@ function timedTest(vid, t, m, epanel){
             $("#step-emo").unbind("click");
             $("#step-emo").click(function(){
                 epanel.classList.add('d-none');
+                $("#marker").addClass('d-none');
                 document.getElementById("msg-emo").innerHTML = "Select an emotion coordinate.";
                 userData.test[test_count]["selectionStop"] = timestamp(true);
                 test_count ++;
